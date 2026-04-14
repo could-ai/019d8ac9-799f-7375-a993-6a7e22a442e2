@@ -18,8 +18,9 @@ class Option {
 
 class Section {
   final String ruTitle;
+  final String enTitle;
   final List<Option> items;
-  Section(this.ruTitle, this.items);
+  Section(this.ruTitle, this.enTitle, this.items);
 }
 
 class Question {
@@ -210,7 +211,7 @@ final List<Question> onboardingQuestions = [
     minSelections: 1,
     maxSelections: 5,
     sections: [
-      Section('Креативные хобби', [
+      Section('Креативные хобби', 'Creative hobbies', [
         Option('🎤 Вокал', 'Vocals'),
         Option('💃 Танцы', 'Dancing'),
         Option('🎨 Рисование', 'Drawing / painting'),
@@ -223,7 +224,7 @@ final List<Question> onboardingQuestions = [
         Option('🎹 Игра на фортепиано', 'Piano'),
         Option('🎭 Актерское мастерство', 'Acting'),
       ]),
-      Section('Спорт и фитнес', [
+      Section('Спорт и фитнес', 'Sports and fitness', [
         Option('🏃 Бег', 'Running'),
         Option('🏋️ Тренажерка', 'Gym'),
         Option('🧘 Йога', 'Yoga'),
@@ -239,7 +240,7 @@ final List<Question> onboardingQuestions = [
         Option('🎾 Теннис', 'Tennis'),
         Option('🥊 Бокс / кикбоксинг', 'Boxing / kickboxing'),
       ]),
-      Section('Гастрономия', [
+      Section('Гастрономия', 'Gastronomy', [
         Option('🍽️ Гурман', 'Foodie'),
         Option('🧁 Выпечка', 'Baking'),
         Option('👩‍🍳 Готовка', 'Cooking'),
@@ -249,7 +250,7 @@ final List<Question> onboardingQuestions = [
         Option('🍷 Вино', 'Wine'),
         Option('🍸 Коктейли', 'Cocktails'),
       ]),
-      Section('Развлечения', [
+      Section('Развлечения', 'Entertainment', [
         Option('🍻 Бары', 'Bars'),
         Option('🎵 Концерты', 'Concerts'),
         Option('📚 Книжные клубы', 'Book clubs'),
@@ -262,12 +263,12 @@ final List<Question> onboardingQuestions = [
         Option('🩰 Балет', 'Ballet'),
         Option('🧺 Пикники', 'Picnics'),
       ]),
-      Section('Животные', [
+      Section('Животные', 'Animals', [
         Option('🐱 Кошки', 'Cats'),
         Option('🐶 Собаки', 'Dogs'),
         Option('🐦 Птицы', 'Birds'),
       ]),
-      Section('Путешествия', [
+      Section('Путешествия', 'Travel', [
         Option('🥾 Походы', 'Hiking'),
         Option('🏖️ Пляжи', 'Beaches'),
         Option('🏔️ Горы', 'Mountains'),
@@ -275,7 +276,7 @@ final List<Question> onboardingQuestions = [
         Option('🚗 Роудтрип', 'Road trip'),
         Option('⛺ Кемпинг', 'Camping'),
       ]),
-      Section('Забота о себе', [
+      Section('Забота о себе', 'Self-care', [
         Option('📖 Саморазвитие', 'Self-development'),
         Option('💅 Бьюти', 'Beauty'),
         Option('🧠 Психология', 'Psychology'),
@@ -349,7 +350,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void _nextPage() {
-    if (!_isCurrentQuestionValid()) return;
+    if (!_isCurrentQuestionValid()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            widget.language == 'RU' 
+              ? 'Пожалуйста, ответьте на вопрос корректно' 
+              : 'Please answer the question correctly'
+          ),
+        ),
+      );
+      return;
+    }
 
     if (_currentIndex < onboardingQuestions.length - 1) {
       _pageController.nextPage(
@@ -358,6 +370,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       );
     } else {
       _finishOnboarding();
+    }
+  }
+
+  void _previousPage() {
+    if (_currentIndex > 0) {
+      _pageController.previousPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    } else {
+      Navigator.pop(context);
     }
   }
 
@@ -376,6 +399,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   String _getOptionText(Option o) {
     return widget.language == 'RU' ? o.ru : o.en;
+  }
+
+  String _getSectionTitle(Section s) {
+    return widget.language == 'RU' ? s.ruTitle : s.enTitle;
   }
 
   Widget _buildTextInput(Question q) {
@@ -398,7 +425,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           value: _selectedCountry,
           decoration: const InputDecoration(border: OutlineInputBorder()),
           hint: Text(widget.language == 'RU' ? 'Выберите страну' : 'Select country'),
-          items: countries.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
+          items: countries.map((c) {
+            return DropdownMenuItem(
+              value: c,
+              child: Text(c),
+            );
+          }).toList(),
           onChanged: (val) {
             setState(() {
               _selectedCountry = val;
@@ -410,7 +442,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           TextField(
             controller: _otherCountryController,
             decoration: InputDecoration(
-              hintText: widget.language == 'RU' ? 'Название страны' : 'Country name',
+              hintText: widget.language == 'RU' ? 'Введите вашу страну' : 'Enter your country',
               border: const OutlineInputBorder(),
             ),
             onChanged: (_) => setState(() {}),
@@ -420,173 +452,147 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         TextField(
           controller: _cityController,
           decoration: InputDecoration(
-            hintText: widget.language == 'RU' ? 'Город' : 'City',
+            hintText: widget.language == 'RU' ? 'Введите город' : 'Enter your city',
             border: const OutlineInputBorder(),
           ),
           onChanged: (_) => setState(() {}),
         ),
-        if (widget.language == 'RU') ...[
-          const SizedBox(height: 8),
-          Text(
-            'Если ты живешь в маленьком городе, но рядом есть крупный - укажи его, чтобы увеличить шанс на мэтчи',
-            style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
-          ),
-        ],
       ],
     );
   }
 
   Widget _buildSingleSelect(Question q) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: q.options!.map((option) {
-        final text = _getOptionText(option);
-        final isSelected = _answers[q.id] == text;
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 16.0),
-          child: OutlinedButton(
-            onPressed: () {
-              setState(() {
-                _answers[q.id] = text;
-              });
-              // Auto-advance for single select
-              Future.delayed(const Duration(milliseconds: 200), _nextPage);
-            },
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.all(20),
-              side: BorderSide(
-                color: isSelected ? Theme.of(context).primaryColor : Colors.grey.shade300,
-                width: 2,
-              ),
-              backgroundColor: isSelected ? Theme.of(context).primaryColor.withOpacity(0.05) : Colors.transparent,
-            ),
-            child: Text(
-              text,
-              style: TextStyle(
-                color: isSelected ? Theme.of(context).primaryColor : Theme.of(context).colorScheme.onSurface,
-                fontSize: 16,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: q.options!.length,
+      itemBuilder: (context, index) {
+        final option = q.options![index];
+        return RadioListTile<String>(
+          title: Text(_getOptionText(option)),
+          value: option.en,
+          groupValue: _answers[q.id],
+          onChanged: (val) {
+            setState(() {
+              _answers[q.id] = val;
+            });
+          },
         );
-      }).toList(),
+      },
     );
   }
 
   Widget _buildMultiSelect(Question q) {
     final List<String> selected = _answers[q.id] ?? [];
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: q.options!.map((option) {
-        final text = _getOptionText(option);
-        final isSelected = selected.contains(text);
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 16.0),
-          child: OutlinedButton(
-            onPressed: () {
-              setState(() {
-                if (isSelected) {
-                  selected.remove(text);
-                } else {
-                  if (selected.length < (q.maxSelections ?? 999)) {
-                    selected.add(text);
-                  }
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: q.options!.length,
+      itemBuilder: (context, index) {
+        final option = q.options![index];
+        final isSelected = selected.contains(option.en);
+        return CheckboxListTile(
+          title: Text(_getOptionText(option)),
+          value: isSelected,
+          onChanged: (val) {
+            setState(() {
+              if (val == true) {
+                if (selected.length < (q.maxSelections ?? 999)) {
+                  selected.add(option.en);
                 }
-                _answers[q.id] = selected;
-              });
-            },
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.all(20),
-              side: BorderSide(
-                color: isSelected ? Theme.of(context).primaryColor : Colors.grey.shade300,
-                width: 2,
-              ),
-              backgroundColor: isSelected ? Theme.of(context).primaryColor.withOpacity(0.05) : Colors.transparent,
-            ),
-            child: Text(
-              text,
-              style: TextStyle(
-                color: isSelected ? Theme.of(context).primaryColor : Theme.of(context).colorScheme.onSurface,
-                fontSize: 16,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
+              } else {
+                selected.remove(option.en);
+              }
+              _answers[q.id] = selected;
+            });
+          },
         );
-      }).toList(),
+      },
     );
   }
 
   Widget _buildMultiSelectSectioned(Question q) {
     final List<String> selected = _answers[q.id] ?? [];
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: q.sections!.map((section) {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: q.sections!.length,
+      itemBuilder: (context, sectionIndex) {
+        final section = q.sections![sectionIndex];
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Text(
-                section.ruTitle, // Using RU title as section header for both languages as per spec
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                _getSectionTitle(section),
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
             ),
             Wrap(
-              spacing: 8,
-              runSpacing: 8,
+              spacing: 8.0,
+              runSpacing: 8.0,
               children: section.items.map((option) {
-                final text = _getOptionText(option);
-                final isSelected = selected.contains(text);
+                final isSelected = selected.contains(option.en);
                 return FilterChip(
-                  label: Text(text),
+                  label: Text(_getOptionText(option)),
                   selected: isSelected,
-                  onSelected: (bool value) {
+                  onSelected: (val) {
                     setState(() {
-                      if (value) {
-                        if (selected.length < (q.maxSelections ?? 5)) {
-                          selected.add(text);
+                      if (val) {
+                        if (selected.length < (q.maxSelections ?? 999)) {
+                          selected.add(option.en);
                         }
                       } else {
-                        selected.remove(text);
+                        selected.remove(option.en);
                       }
                       _answers[q.id] = selected;
                     });
                   },
-                  selectedColor: Theme.of(context).primaryColor.withOpacity(0.2),
-                  checkmarkColor: Theme.of(context).primaryColor,
                 );
               }).toList(),
             ),
+            const SizedBox(height: 16),
           ],
         );
-      }).toList(),
+      },
     );
   }
 
   Widget _buildPhotoUpload(Question q) {
     return Column(
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        Text(
+          widget.language == 'RU' 
+            ? 'Загружено: ${_uploadedPhotos.length}/3' 
+            : 'Uploaded: ${_uploadedPhotos.length}/3',
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 16),
+        Wrap(
+          spacing: 16,
+          runSpacing: 16,
           children: List.generate(3, (index) {
             final hasPhoto = index < _uploadedPhotos.length;
             return GestureDetector(
               onTap: () {
                 if (!hasPhoto) {
                   setState(() {
-                    _uploadedPhotos.add('photo_${DateTime.now().millisecondsSinceEpoch}.jpg');
+                    _uploadedPhotos.add('photo_path_$index');
+                  });
+                } else {
+                  setState(() {
+                    _uploadedPhotos.removeAt(index);
                   });
                 }
               },
               child: Container(
                 width: 100,
-                height: 140,
+                height: 100,
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey.shade400),
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.grey[400]!),
                 ),
                 child: hasPhoto
                     ? const Icon(Icons.check_circle, color: Colors.green, size: 40)
@@ -594,11 +600,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
             );
           }),
-        ),
-        const SizedBox(height: 24),
-        Text(
-          widget.language == 'RU' ? 'Загрузите 3 уникальных фото' : 'Upload 3 unique photos',
-          style: TextStyle(color: Colors.grey.shade600),
         ),
       ],
     );
@@ -625,26 +626,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: _currentIndex > 0
-            ? IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  _pageController.previousPage(
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                  );
-                },
-              )
-            : null,
-        title: Text('Question ${_currentIndex + 1} of ${onboardingQuestions.length}'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: _previousPage,
+        ),
+        title: Text(
+          widget.language == 'RU' ? 'Анкета' : 'Questionnaire',
+        ),
       ),
       body: SafeArea(
         child: Column(
           children: [
-            // Progress Bar
             LinearProgressIndicator(
               value: (_currentIndex + 1) / onboardingQuestions.length,
-              backgroundColor: Colors.grey.shade200,
+              backgroundColor: Colors.grey[200],
               valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor),
             ),
             Expanded(
@@ -658,38 +653,56 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 },
                 itemCount: onboardingQuestions.length,
                 itemBuilder: (context, index) {
-                  final question = onboardingQuestions[index];
-
+                  final q = onboardingQuestions[index];
                   return SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          const SizedBox(height: 16),
-                          Text(
-                            _getQuestionText(question),
-                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                            textAlign: TextAlign.center,
+                    padding: const EdgeInsets.all(24.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _getQuestionText(q),
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
                           ),
-                          const SizedBox(height: 32),
-                          _buildQuestionContent(question),
-                          const SizedBox(height: 32),
-                          if (question.type != QuestionType.single)
-                            ElevatedButton(
-                              onPressed: _isCurrentQuestionValid() ? _nextPage : null,
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(vertical: 16),
-                              ),
-                              child: Text(widget.language == 'RU' ? 'Продолжить' : 'Continue'),
-                            ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(height: 8),
+                        if (q.minSelections != null && q.maxSelections != null)
+                          Text(
+                            widget.language == 'RU'
+                                ? 'Выберите от ${q.minSelections} до ${q.maxSelections} вариантов'
+                                : 'Select between ${q.minSelections} and ${q.maxSelections} options',
+                            style: const TextStyle(color: Colors.grey),
+                          ),
+                        const SizedBox(height: 24),
+                        _buildQuestionContent(q),
+                      ],
                     ),
                   );
                 },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: _isCurrentQuestionValid() ? _nextPage : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).primaryColor,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                  ),
+                  child: Text(
+                    _currentIndex == onboardingQuestions.length - 1
+                        ? (widget.language == 'RU' ? 'Завершить' : 'Finish')
+                        : (widget.language == 'RU' ? 'Далее' : 'Next'),
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ),
               ),
             ),
           ],
