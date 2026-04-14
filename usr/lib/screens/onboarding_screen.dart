@@ -182,6 +182,20 @@ final List<Question> onboardingQuestions = [
       Option('Стабильность, уют, проверенные темы', 'Stability, coziness, familiar topics'),
     ],
   ),
+  Question(
+    id: 'q13',
+    type: QuestionType.single,
+    ruText: 'Сколько тебе лет?',
+    enText: 'How old are you?',
+    options: [
+      Option('18–22', '18–22'),
+      Option('23–27', '23–27'),
+      Option('28–32', '28–32'),
+      Option('33–37', '33–37'),
+      Option('38–42', '38–42'),
+      Option('43+', '43+'),
+    ],
+  ),
 
   Question(
     id: 'q14',
@@ -299,6 +313,12 @@ final List<Question> onboardingQuestions = [
     type: QuestionType.photoUpload,
     ruText: 'Добавь свое фото',
     enText: 'Add your photo',
+  ),
+  Question(
+    id: 'photo',
+    type: QuestionType.photoUpload,
+    ruText: 'Загрузи свои фото',
+    enText: 'Upload your photos',
   ),
 ];
 
