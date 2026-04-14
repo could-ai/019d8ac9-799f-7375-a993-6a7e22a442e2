@@ -626,8 +626,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: Text(
                   widget.language == 'RU'
-                      ? 'Вопрос ${_currentIndex + 1} из 12'
-                      : 'Question ${_currentIndex + 1} of 12',
+                      ? 'Вопрос ${_currentIndex + 1} из ${onboardingQuestions.length}'
+                      : 'Question ${_currentIndex + 1} of ${onboardingQuestions.length}',
                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
