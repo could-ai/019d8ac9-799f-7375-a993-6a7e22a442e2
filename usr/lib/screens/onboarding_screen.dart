@@ -182,28 +182,7 @@ final List<Question> onboardingQuestions = [
       Option('Стабильность, уют, проверенные темы', 'Stability, coziness, familiar topics'),
     ],
   ),
-  Question(
-    id: 'q13',
-    type: QuestionType.multiSelect,
-    ruText: 'Твои ценности',
-    enText: 'Your values',
-    ruHelperText: 'Выбери до 5',
-    enHelperText: 'Choose up to 5',
-    minSelections: 1,
-    maxSelections: 5,
-    options: [
-      Option('Честность', 'Honesty'),
-      Option('Свобода', 'Freedom'),
-      Option('Семья', 'Family'),
-      Option('Карьера', 'Career'),
-      Option('Творчество', 'Creativity'),
-      Option('Саморазвитие', 'Self-development'),
-      Option('Духовность', 'Spirituality'),
-      Option('Юмор', 'Humor'),
-      Option('Эмпатия', 'Empathy'),
-      Option('Приключения', 'Adventures'),
-    ],
-  ),
+
   Question(
     id: 'q14',
     type: QuestionType.single,
@@ -375,7 +354,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         final List<String> selected = _answers[q.id] ?? [];
         return selected.length >= (q.minSelections ?? 1) && selected.length <= (q.maxSelections ?? 5);
       case QuestionType.photoUpload:
-        return _uploadedPhotos.isNotEmpty;
+        return _uploadedPhotos.length == 3;
     }
   }
 
@@ -594,15 +573,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       children: [
         Text(
           widget.language == 'RU' 
-            ? 'Загружено: ${_uploadedPhotos.length}/1' 
-            : 'Uploaded: ${_uploadedPhotos.length}/1',
+            ? 'Загружено: ${_uploadedPhotos.length}/3' 
+            : 'Uploaded: ${_uploadedPhotos.length}/3',
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
         Wrap(
           spacing: 16,
           runSpacing: 16,
-          children: List.generate(1, (index) {
+          children: List.generate(3, (index) {
             final hasPhoto = index < _uploadedPhotos.length;
             return GestureDetector(
               onTap: () {
@@ -667,15 +646,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
-              child: Text(
-                widget.language == 'RU'
-                    ? 'Вопрос ${_currentIndex + 1} из ${onboardingQuestions.length}'
-                    : 'Question ${_currentIndex + 1} of ${onboardingQuestions.length}',
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            if (onboardingQuestions[_currentIndex].type != QuestionType.photoUpload)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: Text(
+                  widget.language == 'RU'
+                      ? 'Вопрос ${_currentIndex + 1} из 15'
+                      : 'Question ${_currentIndex + 1} of 15',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
               ),
-            ),
             LinearProgressIndicator(
               value: (_currentIndex + 1) / onboardingQuestions.length,
               backgroundColor: Colors.grey[200],
