@@ -56,7 +56,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const OnboardingScreen(),
+                      builder: (context) => OnboardingScreen(language: _selectedLanguage),
                     ),
                   );
                 },
