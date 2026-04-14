@@ -101,17 +101,6 @@ final List<Question> onboardingQuestions = [
   Question(
     id: 'q6',
     type: QuestionType.single,
-    ruText: 'Как часто ты готова встречаться с новым контактом в первые месяцы?',
-    enText: 'How often are you ready to meet a new contact in the first months?',
-    options: [
-      Option('1–2 раза в месяц (спокойный темп)', '1-2 times a month (relaxed pace)'),
-      Option('1 раз в неделю или чаще', 'Once a week or more'),
-      Option('Зависит от человека и обстоятельств', 'Depends on the person and circumstances'),
-    ],
-  ),
-  Question(
-    id: 'q7',
-    type: QuestionType.single,
     ruText: 'Какое слово больше тебя описывает?',
     enText: 'Which word describes you best?',
     options: [
@@ -121,7 +110,7 @@ final List<Question> onboardingQuestions = [
     ],
   ),
   Question(
-    id: 'q8',
+    id: 'q7',
     type: QuestionType.single,
     ruText: 'Насколько ты открыта в выражении эмоций и переживаний?',
     enText: 'How open are you in expressing emotions and feelings?',
@@ -134,7 +123,7 @@ final List<Question> onboardingQuestions = [
     ],
   ),
   Question(
-    id: 'q9',
+    id: 'q8',
     type: QuestionType.single,
     ruText: 'Что для тебя важнее всего в новом контакте?',
     enText: 'What matters most to you in a new contact?',
@@ -148,7 +137,7 @@ final List<Question> onboardingQuestions = [
     ],
   ),
   Question(
-    id: 'q10',
+    id: 'q9',
     type: QuestionType.single,
     ruText: 'Как ты обычно ведешь себя во время конфликтов?',
     enText: 'How do you usually handle conflicts?',
@@ -159,7 +148,7 @@ final List<Question> onboardingQuestions = [
     ],
   ),
   Question(
-    id: 'q11',
+    id: 'q10',
     type: QuestionType.single,
     ruText: 'Насколько тебя выбивает из равновесия неопределённость…?',
     enText: 'How much does uncertainty unsettle you…?',
@@ -172,44 +161,7 @@ final List<Question> onboardingQuestions = [
     ],
   ),
   Question(
-    id: 'q12',
-    type: QuestionType.single,
-    ruText: 'Что из перечисленного тебе ближе всего?',
-    enText: 'What resonates with you most?',
-    options: [
-      Option('Новые идеи, психология, саморазвитие, книги', 'New ideas, psychology, self-development, books'),
-      Option('Путешествия, активный отдых, приключения', 'Travel, active recreation, adventures'),
-      Option('Стабильность, уют, проверенные темы', 'Stability, coziness, familiar topics'),
-    ],
-  ),
-  Question(
-    id: 'q13',
-    type: QuestionType.single,
-    ruText: 'Сколько тебе лет?',
-    enText: 'How old are you?',
-    options: [
-      Option('18–22', '18–22'),
-      Option('23–27', '23–27'),
-      Option('28–32', '28–32'),
-      Option('33–37', '33–37'),
-      Option('38–42', '38–42'),
-      Option('43+', '43+'),
-    ],
-  ),
-
-  Question(
-    id: 'q14',
-    type: QuestionType.single,
-    ruText: 'Готова ли ты инициировать общение / встречи первой?',
-    enText: 'Are you ready to initiate contact first?',
-    options: [
-      Option('Да, люблю быть инициатором', 'Yes, I love being the initiator'),
-      Option('Иногда, если очень интересно', 'Sometimes, if very interesting'),
-      Option('Предпочитаю, чтобы другая начинала', 'Prefer the other person to initiate'),
-    ],
-  ),
-  Question(
-    id: 'q15',
+    id: 'q11',
     type: QuestionType.multiSelect,
     ruText: 'Какие форматы общения предпочитаешь?',
     enText: 'Which communication formats do you prefer?',
@@ -225,7 +177,7 @@ final List<Question> onboardingQuestions = [
     ],
   ),
   Question(
-    id: 'q16',
+    id: 'q12',
     type: QuestionType.multiSelectSectioned,
     ruText: 'Твои хобби',
     enText: 'Your hobbies',
@@ -309,7 +261,7 @@ final List<Question> onboardingQuestions = [
     ],
   ),
   Question(
-    id: 'q17',
+    id: 'q13',
     type: QuestionType.photoUpload,
     ruText: 'Добавь свое фото',
     enText: 'Add your photo',
@@ -674,8 +626,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: Text(
                   widget.language == 'RU'
-                      ? 'Вопрос ${_currentIndex + 1} из 15'
-                      : 'Question ${_currentIndex + 1} of 15',
+                      ? 'Вопрос ${_currentIndex + 1} из 12'
+                      : 'Question ${_currentIndex + 1} of 12',
                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
