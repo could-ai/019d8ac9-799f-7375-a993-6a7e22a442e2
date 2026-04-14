@@ -348,11 +348,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       case QuestionType.single:
         return _answers[q.id] != null;
       case QuestionType.multiSelect:
-        final List<String> selected = _answers[q.id] ?? [];
+        final List<String> selected = (_answers[q.id] as List<dynamic>?)?.cast<String>() ?? <String>[];
         return selected.length == q.minSelections;
       case QuestionType.multiSelectSectioned:
-        final List<String> selected = _answers[q.id] ?? [];
-        return selected.length >= (q.minSelections ?? 1) && selected.length <= (q.maxSelections ?? 5);
+        final List<String> selected = (_answers[q.id] as List<dynamic>?)?.cast<String>() ?? <String>[];
+        if (q.maxSelections == null) {
+          return selected.length >= (q.minSelections ?? 1);
+        }
+        return selected.length >= (q.minSelections ?? 1) && selected.length <= q.maxSelections!;
       case QuestionType.photoUpload:
         return _uploadedPhotos.length == 3;
     }
@@ -492,7 +495,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Widget _buildMultiSelect(Question q) {
-    final List<String> selected = _answers[q.id] ?? [];
+    final List<String> selected = (_answers[q.id] as List<dynamic>?)?.cast<String>() ?? <String>[];
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -521,7 +524,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Widget _buildMultiSelectSectioned(Question q) {
-    final List<String> selected = _answers[q.id] ?? [];
+    final List<String> selected = (_answers[q.id] as List<dynamic>?)?.cast<String>() ?? <String>[];
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
