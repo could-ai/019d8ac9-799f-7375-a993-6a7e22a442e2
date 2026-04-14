@@ -28,6 +28,8 @@ class Question {
   final QuestionType type;
   final String ruText;
   final String enText;
+  final String? ruHelperText;
+  final String? enHelperText;
   final List<Option>? options;
   final int? minSelections;
   final int? maxSelections;
@@ -38,6 +40,8 @@ class Question {
     required this.type,
     required this.ruText,
     required this.enText,
+    this.ruHelperText,
+    this.enHelperText,
     this.options,
     this.minSelections,
     this.maxSelections,
@@ -180,6 +184,28 @@ final List<Question> onboardingQuestions = [
   ),
   Question(
     id: 'q13',
+    type: QuestionType.multiSelect,
+    ruText: 'Твои ценности',
+    enText: 'Your values',
+    ruHelperText: 'Выбери до 5',
+    enHelperText: 'Choose up to 5',
+    minSelections: 1,
+    maxSelections: 5,
+    options: [
+      Option('Честность', 'Honesty'),
+      Option('Свобода', 'Freedom'),
+      Option('Семья', 'Family'),
+      Option('Карьера', 'Career'),
+      Option('Творчество', 'Creativity'),
+      Option('Саморазвитие', 'Self-development'),
+      Option('Духовность', 'Spirituality'),
+      Option('Юмор', 'Humor'),
+      Option('Эмпатия', 'Empathy'),
+      Option('Приключения', 'Adventures'),
+    ],
+  ),
+  Question(
+    id: 'q14',
     type: QuestionType.single,
     ruText: 'Готова ли ты инициировать общение / встречи первой?',
     enText: 'Are you ready to initiate contact first?',
@@ -190,10 +216,12 @@ final List<Question> onboardingQuestions = [
     ],
   ),
   Question(
-    id: 'q14',
+    id: 'q15',
     type: QuestionType.multiSelect,
     ruText: 'Какие форматы общения предпочитаешь?',
     enText: 'Which communication formats do you prefer?',
+    ruHelperText: 'Выбери 2',
+    enHelperText: 'Choose 2',
     minSelections: 2,
     maxSelections: 2,
     options: [
@@ -204,12 +232,14 @@ final List<Question> onboardingQuestions = [
     ],
   ),
   Question(
-    id: 'q15',
+    id: 'q16',
     type: QuestionType.multiSelectSectioned,
     ruText: 'Твои хобби',
     enText: 'Your hobbies',
-    minSelections: 1,
-    maxSelections: 5,
+    ruHelperText: 'Выбери минимум 5',
+    enHelperText: 'Choose minimum 5',
+    minSelections: 5,
+    maxSelections: null,
     sections: [
       Section('Креативные хобби', 'Creative hobbies', [
         Option('🎤 Вокал', 'Vocals'),
@@ -286,10 +316,10 @@ final List<Question> onboardingQuestions = [
     ],
   ),
   Question(
-    id: 'q16',
+    id: 'q17',
     type: QuestionType.photoUpload,
-    ruText: 'Добавь 3 фото',
-    enText: 'Add 3 photos',
+    ruText: 'Добавь свое фото',
+    enText: 'Add your photo',
   ),
 ];
 
@@ -345,7 +375,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         final List<String> selected = _answers[q.id] ?? [];
         return selected.length >= (q.minSelections ?? 1) && selected.length <= (q.maxSelections ?? 5);
       case QuestionType.photoUpload:
-        return _uploadedPhotos.length == 3;
+        return _uploadedPhotos.isNotEmpty;
     }
   }
 
@@ -564,15 +594,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       children: [
         Text(
           widget.language == 'RU' 
-            ? 'Загружено: ${_uploadedPhotos.length}/3' 
-            : 'Uploaded: ${_uploadedPhotos.length}/3',
+            ? 'Загружено: ${_uploadedPhotos.length}/1' 
+            : 'Uploaded: ${_uploadedPhotos.length}/1',
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
         Wrap(
           spacing: 16,
           runSpacing: 16,
-          children: List.generate(3, (index) {
+          children: List.generate(1, (index) {
             final hasPhoto = index < _uploadedPhotos.length;
             return GestureDetector(
               onTap: () {
@@ -637,6 +667,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       body: SafeArea(
         child: Column(
           children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: Text(
+                widget.language == 'RU'
+                    ? 'Вопрос ${_currentIndex + 1} из ${onboardingQuestions.length}'
+                    : 'Question ${_currentIndex + 1} of ${onboardingQuestions.length}',
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ),
             LinearProgressIndicator(
               value: (_currentIndex + 1) / onboardingQuestions.length,
               backgroundColor: Colors.grey[200],
@@ -667,7 +706,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        if (q.minSelections != null && q.maxSelections != null)
+                        if (q.ruHelperText != null && q.enHelperText != null)
+                          Text(
+                            widget.language == 'RU' ? q.ruHelperText! : q.enHelperText!,
+                            style: const TextStyle(color: Colors.grey),
+                          )
+                        else if (q.minSelections != null && q.maxSelections != null)
                           Text(
                             widget.language == 'RU'
                                 ? 'Выберите от ${q.minSelections} до ${q.maxSelections} вариантов'
