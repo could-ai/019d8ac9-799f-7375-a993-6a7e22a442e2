@@ -65,7 +65,7 @@ final List<Question> onboardingQuestions = [
   Question(
     id: 'q3',
     type: QuestionType.single,
-    ruText: 'Кого ты ищешь в данный момент?',
+    ruText: 'Сколько тебе лет?',
     enText: 'Who are you looking for right now?',
     options: [
       Option('Подруг', 'Friends'),
