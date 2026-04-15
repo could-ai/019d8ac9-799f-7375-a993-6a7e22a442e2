@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:couldai_user_app/screens/main_navigation_screen.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 enum QuestionType {
   text,
