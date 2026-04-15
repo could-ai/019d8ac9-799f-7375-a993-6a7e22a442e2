@@ -66,12 +66,7 @@ final List<Question> onboardingQuestions = [
     id: 'q3',
     type: QuestionType.single,
     ruText: 'Сколько тебе лет?',
-    enText: 'Who are you looking for right now?',
-    options: [
-      Option('Подруг', 'Friends'),
-      Option('В первую очередь подруг, но открыта и к полезным контактам', 'Primarily friends, but open to useful contacts'),
-      Option('Полезные контакты', 'Useful contacts'),
-    ],
+    enText: 'How old are you?',
   ),
   Question(
     id: 'q4',
@@ -291,6 +286,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   // Controllers for text inputs
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _ageController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _otherCountryController = TextEditingController();
   String? _selectedCountry;
@@ -302,6 +298,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void dispose() {
     _pageController.dispose();
     _nameController.dispose();
+    _ageController.dispose();
     _cityController.dispose();
     _otherCountryController.dispose();
     super.dispose();
@@ -310,8 +307,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   bool _isCurrentQuestionValid() {
     final q = onboardingQuestions[_currentIndex];
     switch (q.type) {
-      case QuestionType.text:
-        return _nameController.text.trim().isNotEmpty;
+case QuestionType.text:
+  if (q.id == 'q3') {
+    final text = _ageController.text.trim();
+    final age = int.tryParse(text);
+    return age != null && age > 0 && age < 120;
+  }
+  return _nameController.text.trim().isNotEmpty;
       case QuestionType.countryCity:
         if (_selectedCountry == null) return false;
         if (_selectedCountry == 'OTHER' && _otherCountryController.text.trim().isEmpty) return false;
@@ -389,16 +391,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     return widget.language == 'RU' ? s.ruTitle : s.enTitle;
   }
 
-  Widget _buildTextInput(Question q) {
-    return TextField(
-      controller: _nameController,
-      decoration: InputDecoration(
-        hintText: widget.language == 'RU' ? 'Введите имя' : 'Enter your name',
-        border: const OutlineInputBorder(),
-      ),
-      onChanged: (_) => setState(() {}),
-    );
-  }
+Widget _buildTextInput(Question q) {
+  final isAgeQuestion = q.id == 'q3';
+
+  return TextField(
+    controller: isAgeQuestion ? _ageController : _nameController,
+    keyboardType: isAgeQuestion ? TextInputType.number : TextInputType.text,
+    decoration: InputDecoration(
+      hintText: isAgeQuestion
+          ? (widget.language == 'RU' ? 'Введи возраст' : 'Enter age')
+          : (widget.language == 'RU' ? 'Введите имя' : 'Enter your name'),
+      border: const OutlineInputBorder(),
+    ),
+    onChanged: (_) => setState(() {}),
+  );
+}
 
   Widget _buildCountryCityInput(Question q) {
     final countries = ['RU', 'BY', 'KZ', 'EE', 'LV', 'LT', 'DE', 'OTHER'];
