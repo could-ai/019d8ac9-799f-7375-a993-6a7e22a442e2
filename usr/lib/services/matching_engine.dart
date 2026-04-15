@@ -48,14 +48,44 @@ class MatchingEngine {
     return finalSortedList;
   }
 
-  static String _getCity(UserProfile user) {
-    if (user.answers != null && user.answers!['q2'] != null) {
-      // q2 is countryCity type, usually stored as "Country, City" or similar.
-      // We'll just normalize the whole string for comparison.
-      return user.answers!['q2'].toString().trim().toLowerCase();
-    }
-    return user.city.trim().toLowerCase();
+static String _normalizeCity(String value) {
+  String city = value.trim().toLowerCase();
+
+  city = city.replaceAll('ё', 'е');
+  city = city.replaceAll(RegExp(r'\s+'), ' ');
+
+  // If q2 contains "Country, City" or similar, take the last part
+  if (city.contains(',')) {
+    city = city.split(',').last.trim();
   }
+
+  // Common city aliases
+  const cityMappings = {
+    'таллин': 'tallinn',
+    'таллинн': 'tallinn',
+    'tallin': 'tallinn',
+    'tallinn': 'tallinn',
+    'москва': 'moscow',
+    'moskva': 'moscow',
+    'moscow': 'moscow',
+    'питер': 'saint petersburg',
+    'спб': 'saint petersburg',
+    'санкт-петербург': 'saint petersburg',
+    'санкт петербург': 'saint petersburg',
+    'saint petersburg': 'saint petersburg',
+    'st petersburg': 'saint petersburg',
+    'st. petersburg': 'saint petersburg',
+  };
+
+  return cityMappings[city] ?? city;
+}
+
+static String _getCity(UserProfile user) {
+  if (user.answers != null && user.answers!['q2'] != null) {
+    return _normalizeCity(user.answers!['q2'].toString());
+  }
+  return _normalizeCity(user.city);
+}
 
   static int calculateScore(UserProfile currentUser, UserProfile otherUser) {
     int totalScore = 0;
