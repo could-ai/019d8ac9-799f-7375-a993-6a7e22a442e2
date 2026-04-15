@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:couldai_user_app/models/user_profile.dart';
 import 'package:couldai_user_app/screens/paywall_screen.dart';
+import 'package:couldai_user_app/services/matching_engine.dart';
 
 class DiscoverTab extends StatefulWidget {
   const DiscoverTab({super.key});
@@ -12,6 +13,35 @@ class DiscoverTab extends StatefulWidget {
 class _DiscoverTabState extends State<DiscoverTab> {
   final PageController _pageController = PageController();
   int _connectsRemaining = 3; // Mock limit
+  List<UserProfile> _sortedProfiles = [];
+
+  @override
+  void initState() {
+    super.initState();
+    // Create a mock current user to test matching
+    final currentUser = UserProfile(
+      id: 'me',
+      name: 'Me',
+      age: 28,
+      city: 'New York',
+      photos: [],
+      matchHighlights: [],
+      bio: '',
+      answers: {
+        'q2': 'USA, New York',
+        'q3': '28',
+        'q4': 'Deep one-on-one conversations',
+        'q5': '4 — Very important',
+        'q6': 'Ambivert — comfortable in both quiet and active settings',
+        'q7': '4 — Quite open',
+        'q9': 'Kind but can stand my ground',
+        'q10': '2 — Bothers me slightly but passes quickly',
+        'q11': ['Coffee', 'Walk'],
+        'q12': ['Hiking', 'Coffee', 'Reading', 'Photography', 'Travel'],
+      },
+    );
+    _sortedProfiles = MatchingEngine.getSortedMatches(currentUser, mockProfiles);
+  }
 
   void _onConnect(UserProfile profile) {
     if (_connectsRemaining > 0) {
@@ -53,9 +83,9 @@ class _DiscoverTabState extends State<DiscoverTab> {
           PageView.builder(
             controller: _pageController,
             scrollDirection: Axis.vertical,
-            itemCount: mockProfiles.length,
+            itemCount: _sortedProfiles.length,
             itemBuilder: (context, index) {
-              return _buildProfileCard(mockProfiles[index]);
+              return _buildProfileCard(_sortedProfiles[index]);
             },
           ),
           // Connects Counter
