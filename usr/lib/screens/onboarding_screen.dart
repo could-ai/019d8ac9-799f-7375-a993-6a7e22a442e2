@@ -370,14 +370,33 @@ case QuestionType.text:
     }
   }
 
-  void _finishOnboarding() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const MainNavigationScreen(),
-      ),
-    );
+void _finishOnboarding() async {
+  final user = Supabase.instance.client.auth.currentUser;
+
+  if (user == null) {
+    return;
   }
+
+  await Supabase.instance.client.from('native_users').insert({
+    'auth_user_id': user.id,
+    'name': _nameController.text.trim(),
+    'age': int.tryParse(_ageController.text.trim()),
+    'city': _cityController.text.trim().toLowerCase(),
+    'answers': {
+      ..._answers,
+      'q1': _nameController.text.trim(),
+      'q2': _cityController.text.trim().toLowerCase(),
+      'q3': int.tryParse(_ageController.text.trim()),
+    }
+  });
+
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(
+      builder: (context) => const MainNavigationScreen(),
+    ),
+  );
+}
 
   String _getQuestionText(Question q) {
     return widget.language == 'RU' ? q.ruText : q.enText;
