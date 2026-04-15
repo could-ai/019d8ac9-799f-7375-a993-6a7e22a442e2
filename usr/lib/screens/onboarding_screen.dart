@@ -64,7 +64,7 @@ final List<Question> onboardingQuestions = [
   ),
   Question(
     id: 'q3',
-    type: QuestionType.single,
+    type: QuestionType.text,
     ruText: 'Сколько тебе лет?',
     enText: 'How old are you?',
   ),
@@ -403,7 +403,11 @@ Widget _buildTextInput(Question q) {
           : (widget.language == 'RU' ? 'Введите имя' : 'Enter your name'),
       border: const OutlineInputBorder(),
     ),
-    onChanged: (_) => setState(() {}),
+onChanged: (value) {
+  setState(() {
+    _answers[q.id] = value;
+  });
+},
   );
 }
 
